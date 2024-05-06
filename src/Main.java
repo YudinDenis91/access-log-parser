@@ -26,15 +26,14 @@ public class Main {
                 FileReader fileReader = new FileReader(path);
                 BufferedReader reader = new BufferedReader(fileReader);
                 String line;
-                int countlines=0;
-                int length=0;
-                int maxline = length;
+                int countlines = 0;
+                int maxline = 0;
                 int minline = 1024;
                 while ((line = reader.readLine()) != null) {
-                    length = line.length();
+                    int length = line.length();
                     if (length>maxline) maxline=length;
                     if (length<minline) minline=length;
-                    if (length>1024) throw new IllegalArgumentException("Найдена очень длинная строка, длина больше 1024 символов");
+                    if (length>1024) throw new LineTooLongException("Строка превышает максимальную длину: 1024 символа");
                     countlines++;
                 }
                 System.out.println("Количество строк в файле: " + countlines);
@@ -44,5 +43,10 @@ public class Main {
                 ex.printStackTrace();
             }
         }
+    }
+}
+class LineTooLongException extends Exception{
+    public LineTooLongException(String message) {
+        super(message);
     }
 }
