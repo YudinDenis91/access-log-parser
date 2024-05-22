@@ -1,4 +1,7 @@
+package main;
+
 import java.io.*;
+import java.util.Arrays;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -31,6 +34,7 @@ public class Main {
                 int googleBotCount = 0;
                 int yandexBotCount = 0;
                 int countlines = 0;
+                Statistics statistics = new Statistics();
                 Pattern pattern = Pattern.compile("^(\\S+) \\S+ \\S+ \\[([\\w:/]+\\s[+\\-]\\d{4})\\] \"(\\S+ \\S+ \\S+)\" (\\d{3}) (\\d+) \"(.*?)\" \"(.*?)\"$");
                 while ((line = reader.readLine()) != null) {
                     int length = line.length();
@@ -38,20 +42,19 @@ public class Main {
                     countlines++;
                     Matcher matcher = pattern.matcher(line);
                     if (matcher.matches()) {
-                        String ip = matcher.group(1);
-                        String dateTime = matcher.group(2);
-                        String request = matcher.group(3);
-                        String statusCode = matcher.group(4);
-                        String bytesSent = matcher.group(5);
-                        String referer = matcher.group(6);
-                        String userAgent = matcher.group(7);
-                        if (userAgent.contains("Googlebot")) {
+                        LogEntry logEntry = new LogEntry(line);
+                        UserAgent userAgent = new UserAgent(line);
+                        statistics.addEntry(logEntry);
+                        System.out.println(userAgent.getOs() + " " + userAgent.getBrowser());
+                        if (logEntry.getUserAgent().contains("Googlebot")) {
                             googleBotCount++;
-                        } else if (userAgent.contains("YandexBot")) {
+                        } else if (logEntry.getUserAgent().contains("YandexBot")) {
                             yandexBotCount++;
                         }
                     }
                 }
+                double trafficRate = statistics.getTrafficRate();
+                System.out.println(trafficRate);
                 System.out.println("Количество строк в файле: " + countlines);
                 System.out.println("Запросы Googlebot: " + googleBotCount + " (" + (googleBotCount*100.0/countlines + "%)"));
                 System.out.println("Запросы YandexBot: " + yandexBotCount + " (" + (yandexBotCount*100.0/countlines + "%)"));
