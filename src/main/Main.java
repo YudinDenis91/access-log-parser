@@ -53,10 +53,10 @@ public class Main {
                         }
                     }
                 }
-                double trafficRate = statistics.getTrafficRate();
                 System.out.println(statistics.getPages());
                 System.out.println(statistics.getOsDistribution());
-                System.out.println(trafficRate);
+                //double trafficRate = statistics.getTrafficRate();
+                //System.out.println(trafficRate);
                 System.out.println("Количество строк в файле: " + countlines);
                 System.out.println("Запросы Googlebot: " + googleBotCount + " (" + (googleBotCount*100.0/countlines + "%)"));
                 System.out.println("Запросы YandexBot: " + yandexBotCount + " (" + (yandexBotCount*100.0/countlines + "%)"));
