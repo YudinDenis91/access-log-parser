@@ -12,6 +12,8 @@ public class Statistics {
     private LocalDateTime maxTime;
     private final HashSet<String> pages = new HashSet<>();
     private final HashMap<String, Integer> osCounts = new HashMap<>();
+    private final HashMap<String, Integer> browserCounts = new HashMap<>();
+
 
     public Statistics() {
         this.totalTraffic = 0;
@@ -19,13 +21,20 @@ public class Statistics {
         this.maxTime = LocalDateTime.MIN; // Инициализируем минимальным значением
     }
     public void addEntry(LogEntry entry) {
-        if (entry.getStatusCode() == 200) {
+        if (entry.getStatusCode() == 404) {
             pages.add(entry.getPath());
         }
-        if (osCounts.containsKey(entry.getUserAgent())) {
-            osCounts.put(entry.getUserAgent(), osCounts.get(entry.getUserAgent()) + 1);
+        String os = new UserAgent(entry.getUserAgent()).getOs();
+        if (osCounts.containsKey(os)) {
+            osCounts.put(os, osCounts.get(os) + 1);
         } else {
-            osCounts.put(entry.getUserAgent(), 1);
+            osCounts.put(os, 1);
+        }
+        String browser = new UserAgent(entry.getUserAgent()).getBrowser();
+        if (browserCounts.containsKey(browser)) {
+            browserCounts.put(browser, browserCounts.get(browser) + 1);
+        } else {
+            browserCounts.put(browser, 1);
         }
         /*totalTraffic += entry.getBytesSent();
         if (entry.getDateTime().isBefore(minTime)) {
@@ -41,13 +50,20 @@ public class Statistics {
     public Map<String, Double> getOsDistribution() {
         HashMap<String, Double> osDistribution = new HashMap<>();
         int totalOsCount = osCounts.values().stream().reduce(0, Integer::sum);
-
         for (Map.Entry<String, Integer> entry : osCounts.entrySet()) {
             double osRatio = (double) entry.getValue() / totalOsCount;
             osDistribution.put(entry.getKey(), osRatio);
         }
-
         return osDistribution;
+    }
+    public Map<String, Double> getBrowserDistribution() {
+        HashMap<String, Double> browserDistribution = new HashMap<>();
+        int totalBrowserCount = browserCounts.values().stream().reduce(0, Integer::sum);
+        for (Map.Entry<String, Integer> entry : browserCounts.entrySet()) {
+            double browserRatio = (double) entry.getValue() / totalBrowserCount;
+            browserDistribution.put(entry.getKey(), browserRatio);
+        }
+        return browserDistribution;
     }
     public double getTrafficRate() {
         double hours = ChronoUnit.HOURS.between(maxTime, minTime); // Вычисляем разницу в часах

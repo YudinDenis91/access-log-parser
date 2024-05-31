@@ -2,6 +2,7 @@ package main;
 
 import java.io.*;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -53,10 +54,25 @@ public class Main {
                         }
                     }
                 }
-                System.out.println(statistics.getPages());
-                System.out.println(statistics.getOsDistribution());
+                //System.out.println(statistics.getPages());
+                //System.out.println(statistics.getOsDistribution());
                 //double trafficRate = statistics.getTrafficRate();
                 //System.out.println(trafficRate);
+                // Выводим статистику страниц
+                System.out.println("\nСписок страниц:");
+                for (String page : statistics.getPages()) {
+                    System.out.println(page);
+                }
+                // Выводим статистику операционных систем
+                System.out.println("\nСтатистика операционных систем:");
+                for (Map.Entry<String, Double> entry : statistics.getOsDistribution().entrySet()) {
+                    System.out.println(entry.getKey() + ": " + entry.getValue());
+                }
+                // Выводим статистику браузеров
+                System.out.println("\nСтатистика браузеров:");
+                for (Map.Entry<String, Double> entry : statistics.getBrowserDistribution().entrySet()) {
+                    System.out.println(entry.getKey() + ": " + entry.getValue());
+                }
                 System.out.println("Количество строк в файле: " + countlines);
                 System.out.println("Запросы Googlebot: " + googleBotCount + " (" + (googleBotCount*100.0/countlines + "%)"));
                 System.out.println("Запросы YandexBot: " + yandexBotCount + " (" + (yandexBotCount*100.0/countlines + "%)"));
