@@ -1,7 +1,7 @@
 package main;
 
 import java.io.*;
-import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -54,6 +54,8 @@ public class Main {
                     }
                 }
                 double trafficRate = statistics.getTrafficRate();
+                System.out.println(statistics.getPages());
+                System.out.println(statistics.getOsDistribution());
                 System.out.println(trafficRate);
                 System.out.println("Количество строк в файле: " + countlines);
                 System.out.println("Запросы Googlebot: " + googleBotCount + " (" + (googleBotCount*100.0/countlines + "%)"));
