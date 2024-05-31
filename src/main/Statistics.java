@@ -2,9 +2,7 @@ package main;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
+import java.util.*;
 
 public class Statistics {
     private int totalTraffic;
@@ -13,6 +11,9 @@ public class Statistics {
     private final HashSet<String> pages = new HashSet<>();
     private final HashMap<String, Integer> osCounts = new HashMap<>();
     private final HashMap<String, Integer> browserCounts = new HashMap<>();
+    private final Set<String> userIps = new HashSet<>();
+    private final List<LogEntry> entries = new ArrayList<>();
+    private int errorCount = 0;
 
 
     public Statistics() {
@@ -35,6 +36,13 @@ public class Statistics {
             browserCounts.put(browser, browserCounts.get(browser) + 1);
         } else {
             browserCounts.put(browser, 1);
+        }
+        if (!entry.getUserAgent().contains("bot") && !userIps.contains(entry.getIp())) {
+            userIps.add(entry.getIp());
+        }
+        entries.add(entry);
+        if (entry.getStatusCode() >= 400) {
+            errorCount++;
         }
         /*totalTraffic += entry.getBytesSent();
         if (entry.getDateTime().isBefore(minTime)) {
@@ -65,10 +73,36 @@ public class Statistics {
         }
         return browserDistribution;
     }
+    public double getAverageVisitsPerHour() {
+        if (entries.isEmpty()) {
+            return 0;
+        }
+        LocalDateTime firstTime = entries.get(0).getDateTime();
+        LocalDateTime lastTime = entries.get(entries.size() - 1).getDateTime();
+        long hours = Math.abs(lastTime.until(firstTime, java.time.temporal.ChronoUnit.HOURS));
+        return (double) entries.size() / hours;
+    }
+
+    public double getAverageErrorRequestsPerHour() {
+        if (entries.isEmpty()) {
+            return 0;
+        }
+        LocalDateTime firstTime = entries.get(0).getDateTime();
+        LocalDateTime lastTime = entries.get(entries.size() - 1).getDateTime();
+        long hours = Math.abs(lastTime.until(firstTime, java.time.temporal.ChronoUnit.HOURS));
+        return hours / (double) errorCount;
+    }
+
+    public double getAverageVisitsPerUser() {
+        if (userIps.isEmpty()) {
+            return 0;
+        }
+        return (double) entries.size() / userIps.size();
+    }
     public double getTrafficRate() {
-        double hours = ChronoUnit.HOURS.between(maxTime, minTime); // Вычисляем разницу в часах
+        double hours = ChronoUnit.HOURS.between(maxTime, minTime); //
         if (hours == 0) {
-            return 0; // Возвращаем 0, если разница в часах равна 0
+            return 0; //
         }
         return (double) totalTraffic / hours;
     }

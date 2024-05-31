@@ -73,6 +73,10 @@ public class Main {
                 for (Map.Entry<String, Double> entry : statistics.getBrowserDistribution().entrySet()) {
                     System.out.println(entry.getKey() + ": " + entry.getValue());
                 }
+                // Выводим статистику посещений
+                System.out.println("Среднее количество посещений в час: " + statistics.getAverageVisitsPerHour());
+                System.out.println("Среднее количество ошибочных запросов в час: " + statistics.getAverageErrorRequestsPerHour());
+                System.out.println("Средняя посещаемость одним пользователем: " + statistics.getAverageVisitsPerUser());
                 System.out.println("Количество строк в файле: " + countlines);
                 System.out.println("Запросы Googlebot: " + googleBotCount + " (" + (googleBotCount*100.0/countlines + "%)"));
                 System.out.println("Запросы YandexBot: " + yandexBotCount + " (" + (yandexBotCount*100.0/countlines + "%)"));
