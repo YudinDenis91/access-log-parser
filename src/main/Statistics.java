@@ -3,6 +3,8 @@ package main;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Statistics {
     private int totalTraffic;
@@ -14,6 +16,9 @@ public class Statistics {
     private final Set<String> userIps = new HashSet<>();
     private final List<LogEntry> entries = new ArrayList<>();
     private int errorCount = 0;
+    private final HashMap<Integer, Integer> secondsVisits = new HashMap<>();
+    private final HashSet<String> refererDomains = new HashSet<>();
+    private final HashMap<String, Integer> userVisits = new HashMap<>();
 
 
     public Statistics() {
@@ -44,6 +49,24 @@ public class Statistics {
         if (entry.getStatusCode() >= 400) {
             errorCount++;
         }
+        if (!entry.getUserAgent().contains("bot")) {
+            int second = entry.getDateTime().getSecond();
+            if (secondsVisits.containsKey(second)) {
+                secondsVisits.put(second, secondsVisits.get(second) + 1);
+            } else {
+                secondsVisits.put(second, 1);
+            }
+            if (entry.getReferer() != null && !entry.getReferer().isEmpty()) {
+                String domain = extractDomain(entry.getReferer());
+                refererDomains.add(domain);
+            }
+            String ip = entry.getIp();
+            if (userVisits.containsKey(ip)) {
+                userVisits.put(ip, userVisits.get(ip) + 1);
+            } else {
+                userVisits.put(ip, 1);
+            }
+        }
         /*totalTraffic += entry.getBytesSent();
         if (entry.getDateTime().isBefore(minTime)) {
             minTime = entry.getDateTime();
@@ -51,6 +74,14 @@ public class Statistics {
         if (entry.getDateTime().isAfter(maxTime)) {
             maxTime = entry.getDateTime();
         }*/
+    }
+    private String extractDomain(String url) {
+        Pattern pattern = Pattern.compile("^(?:https?:\\/\\/)?([^/]+)");
+        Matcher matcher = pattern.matcher(url);
+        if (matcher.find()) {
+            return matcher.group(1);
+        }
+        return "";
     }
     public HashSet<String> getPages() {
         return pages;
@@ -98,6 +129,17 @@ public class Statistics {
             return 0;
         }
         return (double) entries.size() / userIps.size();
+    }
+    public int getPeakVisitsPerSecond() {
+        return secondsVisits.values().stream().max(Integer::compareTo).orElse(0);
+    }
+
+    public Set<String> getRefererDomains() {
+        return refererDomains;
+    }
+
+    public int getMaxVisitsPerUser() {
+        return userVisits.values().stream().max(Integer::compareTo).orElse(0);
     }
     public double getTrafficRate() {
         double hours = ChronoUnit.HOURS.between(maxTime, minTime); //

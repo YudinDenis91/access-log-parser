@@ -58,6 +58,10 @@ public class Main {
                 //System.out.println(statistics.getOsDistribution());
                 //double trafficRate = statistics.getTrafficRate();
                 //System.out.println(trafficRate);
+                System.out.println("Количество строк в файле: " + countlines);
+                System.out.println("Запросы Googlebot: " + googleBotCount + " (" + (googleBotCount*100.0/countlines + "%)"));
+                System.out.println("Запросы YandexBot: " + yandexBotCount + " (" + (yandexBotCount*100.0/countlines + "%)"));
+
                 // Выводим статистику страниц
                 System.out.println("\nСписок страниц:");
                 for (String page : statistics.getPages()) {
@@ -77,9 +81,9 @@ public class Main {
                 System.out.println("Среднее количество посещений в час: " + statistics.getAverageVisitsPerHour());
                 System.out.println("Среднее количество ошибочных запросов в час: " + statistics.getAverageErrorRequestsPerHour());
                 System.out.println("Средняя посещаемость одним пользователем: " + statistics.getAverageVisitsPerUser());
-                System.out.println("Количество строк в файле: " + countlines);
-                System.out.println("Запросы Googlebot: " + googleBotCount + " (" + (googleBotCount*100.0/countlines + "%)"));
-                System.out.println("Запросы YandexBot: " + yandexBotCount + " (" + (yandexBotCount*100.0/countlines + "%)"));
+                System.out.println("Пиковая посещаемость сайта (в секунду): " + statistics.getPeakVisitsPerSecond());
+                System.out.println("Список доменов ссылок на текущий сайт: " + statistics.getRefererDomains());
+                System.out.println("Максимальная посещаемость одним пользователем: " + statistics.getMaxVisitsPerUser());
             } catch (Exception ex){
                 ex.printStackTrace();
             }
